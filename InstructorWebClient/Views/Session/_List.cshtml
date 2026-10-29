@@ -1,0 +1,205 @@
+﻿@model InstructorWebClient.Domain.SessionLister
+@{
+    Layout = null;
+}
+
+<div class="card mb-4">
+    <div class="card-header" style="text-align:right">
+        <a href="javascript:void(0)" class="btn btn-primary add-session">Add Session</a>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table id="tbl-session" class="table table-bordered table-responsive">
+                    <tr>
+                        @if ((ViewBag.ShowInstructor as bool?) == true)
+                        {
+                            <th>Instructor</th>
+                        }
+                        <th>Class</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Student</th>
+                        <th>Module</th>
+                        <th>Activities</th>
+                        <th colspan="1" class="text-center">Action</th>
+                    </tr>
+                    <tr>
+                        @if ((ViewBag.ShowInstructor as bool?) == true)
+                        {
+                            <td>
+                                @Html.TextBoxFor(m => m.SearchCriteria.Username, new { @class = "form-control form-search-input" })
+                            </td>
+                        }
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.ClassType, new { @class = "form-control form-search-input", onkeypress = "return event.charCode >= 48 && event.charCode <= 57" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.Date, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                            @Html.TextBox("SearchCriteria.StartTime", "", new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                            @Html.TextBox("SearchCriteria.EndTime", "", new { @class = "form-control form-search-input" })
+                        </td>
+
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.Student, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td colspan="1">
+                        </td>
+                    </tr>
+                    @if (Model != null && Model.List != null && Model.List.Count > default(int))
+                    {
+                        @foreach (var item in Model.List)
+                        {
+                            var totalRows = item.Modules?.Sum(m => m.HourLocations?.Count ?? 0) ?? 1;
+                            var showInstructor = (ViewBag.ShowInstructor as bool?) == true;
+
+                            if (item.Modules == null || !item.Modules.Any())
+                            {
+                                // Render a single row for sessions with no modules
+                                <tr>
+                                    @if (showInstructor)
+                                    {
+                                        <td class="va-middle">@item.Username</td>
+                                    }
+                                    <td class="va-middle">Class @item.ClassType</td>
+                                    <td class="va-middle">@item.Date</td>
+                                    <td class="va-middle">@item.StartTime</td>
+                                    <td class="va-middle">@item.EndTime</td>
+                                    <td class="va-middle">@item.Student</td>
+                                    <td class="va-middle"></td>
+                                    <td class="va-middle"></td>
+                                      
+                                    <td class="text-center va-middle">
+                                        <a href="javascript:void(0);" data-id="@item.Id" class="icon-delete btn-delete text-danger">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                int moduleIndex = 0;
+                                foreach (var mModule in item.Modules)
+                                {
+                                    int hourLocationCount = mModule.HourLocations?.Count ?? 1;
+                                    int hourLocationIndex = 0;
+
+                                    foreach (var mHourLocation in mModule.HourLocations)
+                                    {
+                                        <tr>
+                                            @if (showInstructor && moduleIndex == 0 && hourLocationIndex == 0)
+                                            {
+                                                <td rowspan="@totalRows" class="va-middle">@item.Username</td>
+                                            }
+                                            @if (moduleIndex == 0 && hourLocationIndex == 0)
+                                            {
+                                                <td rowspan="@totalRows" class="va-middle">Class @item.ClassType</td>
+                                                <td rowspan="@totalRows" class="va-middle">@item.Date</td>
+                                                <td rowspan="@totalRows" class="va-middle">@item.StartTime</td>
+                                                <td rowspan="@totalRows" class="va-middle">@item.EndTime</td>
+                                                <td rowspan="@totalRows" class="va-middle">@item.Student</td>
+                                            }
+
+                                            @if (hourLocationIndex == 0)
+                                            {
+                                                <td rowspan="@hourLocationCount" class="va-middle">Module: @mModule.ModuleNumber</td>
+                                            }
+
+                                            <td class="va-middle">
+                                                Hours: @mHourLocation.Hour, Location: @mHourLocation.Location
+                                            </td>
+
+                                            @if (moduleIndex == 0 && hourLocationIndex == 0)
+                                            {
+                                                @* <td rowspan="@totalRows" class="text-center va-middle">
+                                                    <a href="javascript:void(0);" data-id="@item.Id" data-class-type="@item.ClassType" class="icon-edit btn-edit">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </a>
+                                                </td> *@
+                                                <td rowspan="@totalRows" class="text-center va-middle">
+                                                    <a href="javascript:void(0);" data-id="@item.Id" class="icon-delete btn-delete text-danger">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            }
+                                        </tr>
+                                        hourLocationIndex++;
+                                    }
+                                    moduleIndex++;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            @if ((ViewBag.ShowInstructor as bool?) == true)
+                            {
+                                <td colspan="9" class="text-center"> No record found!</td>
+                            }
+                            else
+                            {
+                                <td colspan="8" class="text-center"> No record found!</td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row footer-button-section">
+                    <div class="col-lg-3 col-xl-3">
+                        <div class="page-per-size d-flex align-items-center">
+                            @Html.DropDownListFor(m => m.Pagination.PageSize, ViewBag.Pagination as List<SelectListItem> ?? new List<SelectListItem>(), new { @class = "form-control search-pagination set-page-size" })
+                            <label>entries per page</label>
+                        </div>
+                    </div>
+                    <style>
+
+                    </style>
+                    <div class="col-lg-4 offset-xl-1 col-xl-3 d-flex justify-content-center align-items-center">
+                        <div class="showing-entry d-flex align-items-center">
+                            <h3>@Model.Pagination.PaginationSummary</h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-xl-5">
+                        <div class="navigation-tab">
+                            <input type="button" value="First" class="btn btn-secondary navigation" data-direction="First" />
+                            <input type="button" value="Previous" class="btn btn-secondary navigation" data-direction="Previous" />
+                            <label> @Model?.Pagination.CurrentPage / @Model?.Pagination.TotalPage</label>
+                            <input type="button" value="Next" class="btn btn-secondary navigation" data-direction="Next" />
+                            <input type="button" value="Last" class="btn btn-secondary navigation" data-direction="Last" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.HiddenFor(m => m.Pagination.Skip)
+        @Html.HiddenFor(m => m.Pagination.TotalRecord)
+    </div>
+</div>
+
+
+<script src="@Url.Content("~/custom-js/session/list.js")"></script>
+
+<script>
+    window.paginationConfig = {
+        pageSize: @Model.Pagination.PageSize,
+        totalPage: @Model.Pagination.TotalPage,
+        currentPage: @Model.Pagination.CurrentPage,
+        skip: @Model.Pagination.Skip
+    };
+</script>
+
+

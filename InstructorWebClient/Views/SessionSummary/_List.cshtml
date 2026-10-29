@@ -1,0 +1,59 @@
+﻿@model InstructorWebClient.Domain.SessionSummaryLister
+
+<div class="card mb-4">
+    <div class="card-header" style="text-align:right">
+        <a href="javascript:void(0)" class="btn btn-primary add-student-course"></a>
+    </div>
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col" id="categoryDropdownContainer">
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <div class="custom-file" id="fileInputContainer">
+                            <label class="custom-file-label" for="importFile">Browse</label>
+                            <input type="file" class="custom-file-input" id="importFile">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table id="tbl-student" class="table table-bordered table-striped">
+                    <tr>
+                        <th>Class</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Student</th>
+                    </tr>
+                    @if (Model != null && Model.List != null && Model.List.Count > default(int))
+                    {
+                        foreach (var item in Model.List)
+                        {
+                            <tr>
+
+                                <td>@item.Username</td>
+                                <td>@item.InYard</td>
+                                <td>@item.InVehicle</td>
+                                <td>@item.InClassroom</td>
+                                <td>@item.Total</td>
+                               
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center"> No record found!</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

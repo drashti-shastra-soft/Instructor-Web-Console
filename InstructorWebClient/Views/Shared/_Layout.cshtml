@@ -1,0 +1,276 @@
+﻿@inject InstructorWebClient.Infrastructure.IService.ISessionManagerService sessionManager
+@{
+    var LoginUser = sessionManager.GetLoginUser();
+}
+
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>@ViewData["Title"] | Instructor App</title>
+
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+    <!--begin::Primary Meta Tags-->
+    <meta name="title" content="Instructor App" />
+    <meta name="author" content="Instructor App" />
+    <!--end::Primary Meta Tags-->
+    <!-- Accessibility Features -->
+    <link href="@Url.Content("~/css/adminlte.css")" rel="preload" as="style" />
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    <!-- Fonts -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@@fontsource/source-sans-3@5.0.12/index.css"
+          integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+          crossorigin="anonymous"
+          media="print"
+          onload="this.media='all'" />
+
+    <!-- Third-Party Plugin: OverlayScrollbars -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+          crossorigin="anonymous" />
+
+    <!-- Third-Party Plugin: Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+          crossorigin="anonymous" />
+
+    <!-- AdminLTE Required CSS -->
+    <link rel="stylesheet" href="@Url.Content("~/css/adminlte.css")" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer" />
+
+    <!-- Tempus Dominus DateTimePicker -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css" />
+
+    <!-- Select2 -->
+    <link href="@Url.Content("~/css/select2.min.css")" rel="stylesheet" />
+
+    <link href="@Url.Content("~/css/style.css")" rel="stylesheet" />
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link href="@Url.Content("~/css/custom.css")" rel="stylesheet" />
+
+
+    <!-- jQuery -->
+    <script src="@Url.Content("~/js/jquery-3.7.1.min.js")"></script>
+
+    <!-- Select2  -->
+    <script src="@Url.Content("~/js/select2.full.min.js")"></script>
+
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+    <!-- OverlayScrollbars JS -->
+    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+            crossorigin="anonymous"></script>
+
+    <!-- Popper.js for Bootstrap 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            crossorigin="anonymous"></script>
+
+    <!-- Bootstrap 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+            crossorigin="anonymous"></script>
+
+    <!-- AdminLTE JS -->
+    <script src="@Url.Content("~/js/adminlte.js")"></script>
+
+    <!-- Jquery Unobtrusive Ajax -->
+    <script src="@Url.Content("~/js/jquery.unobtrusive-ajax.min.js")"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script src="@Url.Content("~/js/jquery.mask.min.js")"></script>
+
+    <!-- Custom Notification -->
+    <script src="@Url.Content("~/js/custom-notification.js")"></script>
+
+    <!-- Custom Functions -->
+    <script src="@Url.Content("~/js/custom-functions.js")"></script>
+</head>
+<!--end::Head-->
+<!--begin::Body-->
+<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+        <!--begin::Header-->
+        <nav class="app-header navbar navbar-expand bg-body">
+            <!--begin::Container-->
+            <div class="container-fluid">
+                <!--begin::Start Navbar Links-->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                            <i class="bi bi-list"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!--end::Start Navbar Links-->
+                <!--begin::End Navbar Links-->
+                <ul class="navbar-nav ms-auto">
+
+                    <!--begin::Fullscreen Toggle-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+                            <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+                            <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+                        </a>
+                    </li>
+                    <!--end::Fullscreen Toggle-->
+                    <!--begin::User Menu Dropdown-->
+                    <li class="nav-item dropdown user-menu">
+                        <a href="#" class="nav-link">
+                            <img src="@Url.Content("~/assets/img/avatar5.png")"
+                                 class="user-image rounded-circle shadow"
+                                 alt="User Image" />
+                            <span class="d-none d-md-inline">Hi, @LoginUser.FirstName</span>
+                        </a>
+                    </li>
+                    <!--end::User Menu Dropdown-->
+                </ul>
+                <!--end::End Navbar Links-->
+            </div>
+            <!--end::Container-->
+        </nav>
+        <!--end::Header-->
+        <!--begin::Sidebar-->
+        <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+            <!--begin::Sidebar Brand-->
+            <div class="sidebar-brand">
+                <!--begin::Brand Link-->
+                <a href="@Url.Action("Index", "Dashboard")" class="brand-link">
+                    <!--begin::Brand Image-->
+                    <img src="@Url.Content("~/assets/img/Instructor-App.jpg")"
+                         alt="AdminLTE Logo"
+                         class="brand-image opacity-75 shadow" />
+                    <!--end::Brand Image-->
+                    <!--begin::Brand Text-->
+                    <span class="brand-text fw-light">Instructor App</span>
+                    <!--end::Brand Text-->
+                </a>
+                <!--end::Brand Link-->
+            </div>
+            <!--end::Sidebar Brand-->
+            <!--begin::Sidebar Wrapper-->
+            <div class="sidebar-wrapper">
+                <nav class="mt-2">
+                    <!--begin::Sidebar Menu-->
+                    <ul class="nav sidebar-menu flex-column"
+                        data-lte-toggle="treeview"
+                        role="navigation"
+                        aria-label="Main navigation"
+                        data-accordion="false"
+                        id="navigation">
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Dashboard")" class="nav-link">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                        @{
+                            string title = ViewData["Title"] as string;
+                            bool isReportActive = title == "Master"
+                            || title == "User"
+                            || title == "Course";
+                        }
+                        <li class="nav-item @(isReportActive ? "menu-open" : "") ">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-chart-pie"></i>
+                                <p>
+                                    Master
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index", "User")" class="nav-link @(ViewData["Title"]?.ToString() == "User" ? "active" : "")">
+                                        <i class="nav-icon fa-solid fa-users"></i>
+                                        <p>Users</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index", "Course")" class="nav-link @(ViewData["Title"]?.ToString() == "Course" ? "active" : "")">
+                                        <i class="nav-icon fas fa-book"></i>
+                                        <p>Course</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        @if (LoginUser.UserTypeId == InstructorWebClient.Infrastructure.Utils.EnumHelper.GetEnumIndex(InstructorWebClient.Infrastructure.Utils.Enums.UserType.Admin))
+                        {
+
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Student")" class="nav-link @(ViewData["Title"]?.ToString() == "Student" ? "active" : "")">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <p>Students</p>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Session")" class="nav-link @(ViewData["Title"]?.ToString() == "Session" ? "active" : "")">
+                                <i class="nav-icon fa-solid fa-clock"></i>
+                                <p>Session</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Logout")" class="nav-link">
+                                <i class="nav-icon fa-solid fa-arrow-right-from-bracket"></i>
+                                <p>Logout</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <!--end::Sidebar Menu-->
+                </nav>
+            </div>
+            <!--end::Sidebar Wrapper-->
+        </aside>
+        <!--end::Sidebar-->
+        <!--begin::App Main-->
+        <main class="app-main">
+            @RenderBody()
+
+            <div id="loading-element" class="custom-loader">
+                <div class="loader">
+                    <img src="@Url.Content("~/assets/img/loading.gif")" style="height:100px;" />
+                </div>
+                <br />
+            </div>
+        </main>
+        <!--end::App Main-->
+        <!--begin::Footer-->
+        <footer class="app-footer">
+            <!--begin::To the end-->
+            <div class="float-end d-none d-sm-inline">Anything you want</div>
+            <!--end::To the end-->
+            <!--begin::Copyright-->
+            <strong>
+                Copyright &copy; 2025-2026&nbsp;
+                <a href="javascript:void(0);" class="text-decoration-none">True North Truck Training</a>.
+            </strong>
+            All rights reserved.
+            <!--end::Copyright-->
+        </footer>
+        <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+</body>
+<!--end::Body-->
+</html>

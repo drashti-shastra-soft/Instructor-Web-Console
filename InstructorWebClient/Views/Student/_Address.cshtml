@@ -1,0 +1,129 @@
+﻿@model InstructorWebClient.Domain.Address
+@{
+    Layout = null;
+}
+
+<div class="modal fade" id="modal-address" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Model.Id != default(int))
+                {
+                    <h1 class="modal-title fs-5">Edit Address</h1>
+                }
+                else
+                {
+                    <h1 class="modal-title fs-5">Add Address</h1>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.StudentId)
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Line 1 <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.Line1, new { @class = "form-control", placeholder = "Enter Line 1" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Line 2</label>
+                        @Html.TextBoxFor(m => m.Line2, new { @class = "form-control", placeholder = "Enter Line 2" })
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Line 3</label>
+                        @Html.TextBoxFor(m => m.Line3, new { @class = "form-control", placeholder = "Enter Line 3" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>City <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.City, new { @class = "form-control", placeholder = "Enter City" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>State <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.State, new { @class = "form-control", placeholder = "Enter State" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Zip Code <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.ZipCode, new { @class = "form-control", placeholder = "Enter Zip Code" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close" data-bs-dismiss="modal">Close</button>
+                <a href="javascript:void(0);" class="btn btn-primary" data-form="frmSaveAddress">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     $(document).ready(function () {
+        $("[data-form]").click(function () {
+        if ($(this).data("form") === "frmSaveAddress" && fnIsValid()) {
+            $('#' + $(this).data("form")).submit();
+        }
+    });
+
+
+        var type = '@ViewData["NotificationType"]';
+        var message = '@ViewData["NotificationMsg"]';
+
+        if (type && message) {
+            fnGetNotified(type, message);
+            $('.modal').modal('hide'); // Hide any open modals
+            $('body').removeClass('modal-open'); // Remove the scroll lock
+            $('.modal-backdrop').remove(); // Remove the leftover backdrop
+            $('#frmList').submit();
+        }
+
+    });
+
+    function fnIsValid() {
+        var isValid = true;
+
+        var line1 = $.trim($('#Line1').val());
+        var city = $.trim($('#City').val());
+        var state = $.trim($('#State').val());
+        var zipCode = $.trim($('#ZipCode').val());
+
+        if (line1 == null || line1 == '' || line1 == undefined) {
+            $('#Line1').next('span').text('Line 1 is required!');
+            isValid = false;
+        } else {
+            $('#Line1').next('span').text('');
+        }
+
+        if (city == null || city == '' || city == undefined) {
+            $('#City').next('span').text('City is required!');
+            isValid = false;
+        } else {
+            $('#City').next('span').text('');
+        }
+
+         if (state == null || state == '' || state == undefined) {
+            $('#State').next('span').text('State is required!');
+            isValid = false;
+        } else {
+            $('#State').next('span').text('');
+        }
+
+         if (zipCode == null || zipCode == '' || zipCode == undefined) {
+            $('#ZipCode').next('span').text('Zip Code is required!');
+            isValid = false;
+        } else {
+            $('#ZipCode').next('span').text('');
+        }
+
+        return isValid;
+    }
+
+</script>

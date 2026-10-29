@@ -1,0 +1,164 @@
+﻿@model InstructorWebClient.Domain.Student
+@{
+    Layout = null;
+}
+
+<div class="modal fade" id="modal-student" tabindex="-1" aria-labelledby="StudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Model.Id != default(int))
+                {
+                    <h1 class="modal-title fs-5">Edit Student</h1>
+                }
+                else
+                {
+                    <h1 class="modal-title fs-5">Add Student</h1>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.Id)
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>First Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "Enter First Name" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Last Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Enter Last Name" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Email Address <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control", placeholder = "Enter Email Address" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Mobile Number <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.MobileNumber, new { @class = "form-control", placeholder = "Enter Mobile Number" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <label>License Number <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.LicenseNumber, new { @class = "form-control", placeholder = "Enter License Number" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col-6">
+                        <label>SIN <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.Sin, new { @class = "form-control", placeholder = "Enter Social Insurance Number" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>                
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-check">
+                            @Html.LabelFor(m => m.IsActive, "Is Active?", new { @class = "form-check-label" })
+                            @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close" data-bs-dismiss="modal">Close</button>
+                <a href="javascript:void(0);" class="btn btn-primary btn-submit">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--script for validation-->
+<script>
+    $(document).ready(function () {
+       $('.btn-submit').click(function () {
+            if (fnIsValid()) {
+                $('#frmCreate').submit();
+            }
+        });
+   
+        var type = '@ViewData["NotificationType"]';
+        var message = '@ViewData["NotificationMsg"]';
+        
+        if (type && message) {
+            fnGetNotified(type, message);
+            $('.modal').modal('hide'); 
+            $('body').removeClass('modal-open'); 
+            $('.modal-backdrop').remove(); 
+            $('#frmList').submit();
+        }
+
+        $('#MobileNumber').mask('(000) 000-0000');
+    });
+
+    function fnIsValid() {
+        var isValid = true;
+
+        var firstName = $.trim($('#FirstName').val());
+        var lastName = $.trim($('#LastName').val());
+        var emailAddress = $.trim($('#EmailAddress').val());
+        var mobileNumber = $.trim($('#MobileNumber').val());
+        var sin = $.trim($('#Sin').val());
+        var licenseNumber = $.trim($('#LicenseNumber').val());
+
+
+        if (licenseNumber == null || licenseNumber == '' || licenseNumber == undefined) {
+            $('#LicenseNumber').next('span').text('License Number is required!');
+            isValid = false;
+        } else {
+            $('#LicenseNumber').next('span').text('');
+        }
+
+        if (sin == null || sin == '' || sin == undefined) {
+            $('#Sin').next('span').text('Social Insurance Number is required!');
+            isValid = false;
+        } else {
+            $('#Sin').next('span').text('');
+        }
+
+        if (firstName == null || firstName == '' || firstName == undefined) {
+            $('#FirstName').next('span').text('First Name is required!');
+            isValid = false;
+        } else {
+            $('#FirstName').next('span').text('');
+        }
+
+        if (lastName == null || lastName == '' || lastName == undefined) {
+            $('#LastName').next('span').text('Last Name is required!');
+            isValid = false;
+        } else {
+            $('#LastName').next('span').text('');
+        }
+        
+        if (emailAddress == null || emailAddress == '' || emailAddress == undefined) {
+            $('#EmailAddress').next('span').text('Email Address is required!');
+            isValid = false;
+        } else if (emailAddress != null && emailAddress != '' && emailAddress != undefined) {
+            if (!fnValidateEmail(emailAddress)) {
+                isValid = false;
+                $('#EmailAddress').next('span').text('Please enter correct email address!');
+            } else {
+                $('#EmailAddress').next('span').text('');
+            }
+        } else {
+            $('#EmailAddress').next('span').text('');
+        }
+
+        if (mobileNumber == null || mobileNumber == '' || mobileNumber == undefined) {
+            $('#MobileNumber').next('span').text('Mobile Number is required!');
+            isValid = false;
+        } else if (mobileNumber.length != 14) {
+            $('#MobileNumber').next('span').text('Please enter valid mobile number!');
+            isValid = false;
+        } else {
+            $('#Mobile').next('span').text('');
+        }
+
+        return isValid;
+    }
+
+</script>

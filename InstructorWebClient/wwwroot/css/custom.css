@@ -1,0 +1,91 @@
+﻿.set-page-size {
+    width: fit-content;
+}
+
+.navigation-tab {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+}
+
+@media (max-width: 767px) {
+    .navigation-tab {
+        justify-content: left;
+        margin-top: 10px;
+    }
+
+    .gap-10 {
+        gap: 10px;
+    }
+}
+
+.custom-loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgb(0 0 0 / 50%);
+    height: 100%;
+    width: 100%;
+    z-index: 99999;
+    display: none;
+}
+
+    .custom-loader .loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+    }
+
+.showing-entry h3 {
+    margin-bottom: 0;
+    font-size: 16px;
+}
+
+.page-per-size {
+    gap: 5px;
+}
+
+@media (max-width: 991px) {
+    .page-per-size, .navigation-tab {
+        justify-content: center;
+    }
+
+    .footer-button-section {
+        gap: 15px;
+    }
+}
+
+.position-relative {
+    position: relative;
+}
+
+.password-visibility-wrapper > i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+/*.input-with-clock-icon::after {
+    content: "\f017";*/ /* Unicode clock face */
+    /*position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0d6efd;
+    pointer-events: none;
+    font-size: 16px;
+    font-family: 'FontAwesome';
+}*/
+
+.bg-strip-color {
+    background-color: #f2f2f2 !important;
+}
+
+.va-middle {
+    vertical-align: middle !important;
+}

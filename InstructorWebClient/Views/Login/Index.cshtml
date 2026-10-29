@@ -1,0 +1,161 @@
+﻿@model InstructorWebClient.Domain.Credential
+
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Login | Instructor App</title>
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
+    <!--begin::Primary Meta Tags-->
+    <meta name="title" content="Instructor App" />
+    <meta name="author" content="Instructor App" />
+    <!--end::Primary Meta Tags-->
+
+    <meta name="supported-color-schemes" content="light dark" />
+    <link rel="preload" href="@Url.Content("~/css/adminlte.css")" as="style" />
+    <link rel="stylesheet" href="@Url.Content("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css")"
+          crossorigin="anonymous" />
+    <link href="@Url.Content("~/css/adminlte.css")" rel="stylesheet" />
+    
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    <script src="@Url.Content("~/js/jquery-3.7.1.min.js")"></script>
+    <script src="@Url.Content("~/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/js/adminlte.js")"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="@Url.Content("~/js/custom-notification.js")"></script>
+
+    <style>
+        .LoginFormSection .input-group {
+            display: block;
+        }
+
+            .LoginFormSection .input-group .form-control {
+                width: 100%;
+            }
+
+        /* .hide {
+            display: none;
+        } */
+    </style>
+
+</head>
+<body class="login-page bg-body-secondary">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="@Url.Action("Index", "Login")"><b>Instructor</b> App</a>
+        </div>
+        <div class="card">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Sign in to start your session</p>
+                @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { id = "frmLogin" }))
+                {
+                    <div class="LoginFormSection">
+                        <div class="input-group mb-3">
+                            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", id = "Username", placeholder = "Enter Username", type = "name" })
+                            <span class="text-danger username-error" style="display: none;"></span>
+                        </div>
+                        <div class="input-group mb-3">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "Password", placeholder = "Enter Password" })
+                            <span class="text-danger pass-error" style="display: none;"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                                    @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                                    <label class="form-check-label" for="flexCheckDefault">Remember Me</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="d-grid gap-2">
+                                    <a href="javascript:void(0);" class="btn btn-primary btn-submit">Login</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+                @* <p class="mb-1"><a href="@Url.Action("forgotpassword", "Home")">I forgot my password</a></p> *@
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.btn-submit').click(function (e) {                
+                e.preventDefault();
+                if (fnLoginValidation()) {
+                    $('#frmLogin').submit();
+                }
+            });
+
+            // Show toast if notification exists
+            var type = '@ViewData["NotificationType"]';
+            var message = '@ViewData["NotificationMsg"]';
+
+            if (type && message) {
+                fnGetNotified(type, message);
+            }
+
+            $("#frmLogin input").keypress(function (e) {
+                if (e.which === 13) { // 13 = Enter key
+                    e.preventDefault();
+                    if (fnLoginValidation()) {
+                        $('#frmLogin').submit();
+                    }
+                }
+            });
+        });
+
+        function fnLoginValidation() {
+            
+            var isValid = true;            
+            var username = $.trim($('#Username').val());
+            var password = $.trim($('#Password').val());
+
+            // Reset previous error messages
+            $('.email-error').hide().text('');
+            $('.pass-error').hide().text('');
+
+            if (!username) {
+                $('.username-error').text('Username is required!').show();
+                 isValid = false;
+                } else {
+                 $('.username-error').hide();
+            }
+
+            if (!password) {
+                $('.pass-error').text('Password is required!').show();
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("frmLogin");
+            const spinner = document.getElementById("loading-element");
+
+            form.addEventListener("submit", function () {
+                spinner.style.display = "block";
+            });
+        });
+
+    </script>
+</body>
+</html>
+
+

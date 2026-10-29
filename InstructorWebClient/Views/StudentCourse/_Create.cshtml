@@ -1,0 +1,113 @@
+﻿@model InstructorWebClient.Domain.StudentCourse
+@{
+    Layout = null;
+}
+
+<div class="modal fade" id="modal-student-course" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Model.Id != default(int))
+                {
+                    <h1 class="modal-title fs-5">Edit Student Course</h1>
+                }
+                else
+                {
+                    <h1 class="modal-title fs-5">Add Student Course</h1>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.Id)
+                @Html.HiddenFor(m => m.StudentId)
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Course Name <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(x => x.CourseId, new SelectList(ViewBag.CourseNames, "Value", "Text"), "Select Course Name", new { @class = "form-control" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>StartDate <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date" })
+                        <span class="text-dange date-error"></span>
+                    </div>
+                    <div class="col">
+                        <label>End Date</label>
+                        @Html.TextBoxFor(m => m.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date" })
+                        <span class="text-danger date-error"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-check">
+                            @Html.LabelFor(m => m.IsActive, "Is Active?", new { @class = "form-check-label" })
+                            @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close" data-bs-dismiss="modal">Close</button>
+                <a href="javascript:void(0);" class="btn btn-primary btn-submit">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.btn-submit').click(function () {
+            if (fnIsValid()) {
+                $('#frmCreate').submit();
+            }
+        });
+
+       
+         var type = '@ViewData["NotificationType"]';
+         var message = '@ViewData["NotificationMsg"]';
+
+        if (type && message) {
+
+            fnGetNotified(type, message);
+            $('.modal').modal('hide'); 
+            $('body').removeClass('modal-open'); 
+            $('.modal-backdrop').remove(); 
+            $('#frmList').submit();
+        }
+
+        const now = new Date();
+        const startdateStr = now.toISOString().split('T')[0];
+        const enddateStr = now.toISOString().split('T')[0];
+        const id = parseInt($('#Id').val());
+
+        if (id <= 0) {
+            $('#StartDate').val(startdateStr);
+            $('#EndDate').val(enddateStr);
+        }
+    });
+
+    function fnIsValid() {
+        var isValid = true;
+
+        const startDate = $("#StartDate").val()?.trim();
+        const endDate = $("#EndDate").val()?.trim();
+
+        $("#StartDate").next('.date-error').text('').hide();
+        $("#EndDate").next('.date-error').text('').hide();
+
+         if (startDate == null || startDate == '' || startDate == undefined) {
+            $("#StartDate").next('.date-error').text("Start Date is required!").show();
+            isValid = false;
+        }
+
+         if (endDate == null|| endDate == '' || endDate == undefined) {
+            $("#EndDate").next('.date-error').text("End Date is required!").show();
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+</script>

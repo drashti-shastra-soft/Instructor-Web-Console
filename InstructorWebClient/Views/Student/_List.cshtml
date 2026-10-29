@@ -1,0 +1,177 @@
+﻿@model InstructorWebClient.Domain.StudentLister
+@inject InstructorWebClient.Infrastructure.IService.ISessionManagerService sessionManager
+@{
+    Layout = null;
+    var LoginUser = sessionManager.GetLoginUser();
+}
+
+<style>
+    /* Remove Bootstrap's default striping */
+    .table-striped tbody tr:nth-of-type(odd),
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: transparent;
+    }
+
+    /* Apply custom striping only to visible rows that are not child rows */
+    .table-striped tbody tr.visible-row:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .table-striped tbody tr.visible-row:nth-child(even) {
+        background-color: #ffffff;
+    }
+</style>
+
+<div class="card mb-4">
+    <div class="card-header" style="text-align:right">
+        @if (LoginUser.UserTypeId == InstructorWebClient.Infrastructure.Utils.EnumHelper.GetEnumIndex(InstructorWebClient.Infrastructure.Utils.Enums.UserType.Admin))
+        {
+            <a href="javascript:void(0)" class="btn btn-primary add-student">Add Student</a>
+        }
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table id="tbl-student" class="table table-bordered">
+                    <tr>
+                        <th class="bg-strip-color">
+                            First Name
+                        </th>
+                        <th class="bg-strip-color">
+                            Last Name
+                        </th>
+                        <th class="bg-strip-color">
+                            Email Address
+                        </th>
+                        <th class="bg-strip-color">
+                            Mobile Number
+                        </th>
+                        <th class="bg-strip-color">
+                            License Number
+                        </th>
+                        <th class="bg-strip-color">
+                            SIN
+                        </th>
+                        <th class="bg-strip-color">
+                            Is Active?
+                        </th>
+                        <th colspan="4" class="text-center bg-strip-color">
+                            Action
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.FirstName, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.LastName, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.EmailAddress, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.MobileNumber, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.LicenseNumber, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.SearchCriteria.Sin, new { @class = "form-control form-search-input" })
+                        </td>
+                        <td></td>
+                        <td colspan="4">
+                        </td>
+                    </tr>
+                    @if (Model != null && Model.List != null && Model.List.Count > default(int))
+                    {
+                        foreach (var item in Model.List)
+                        {
+                            <tr>
+                                <td>@item.FirstName</td>
+                                <td>@item.LastName</td>
+                                <td>@item.EmailAddress</td>
+                                <td>@item.MobileNumber</td>
+                                <td>@item.LicenseNumber</td>
+                                <td>@item.Sin</td>
+                                <td class="text-center">
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge text-bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-danger">Disabled</span>
+                                    }
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="javascript:void(0);" data-id="@item.Id" class="icon-studentcourse text-warning"><i class="fas fa-book-reader"></i></a>
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="javascript:void(0);" data-id="@item.Id" class="icon-address text-primary"><i class="fas fa-map-marker-alt"></i></a>
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="javascript:void(0);" data-id="@item.Id" class="icon-edit edit-btn"><i class="fa-solid fa-pen-to-square"></i></a>
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="javascript:void(0);" data-id="@item.Id" class="icon-delete delete-btn text-danger"><i class="fa-solid fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center"> No record found!</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row footer-button-section">
+                    <div class="col-lg-3 col-xl-3">
+                        <div class="page-per-size d-flex align-items-center">
+                            @Html.DropDownListFor(m => m.Pagination.PageSize, ViewBag.Pagination as List<SelectListItem> ?? new List<SelectListItem>(), new { @class = "form-control search-pagination set-page-size" })
+                            <label>entries per page</label>
+                        </div>
+                    </div>
+                    <style>
+
+                    </style>
+                    <div class="col-lg-4 offset-xl-1 col-xl-3 d-flex justify-content-center align-items-center">
+                        <div class="showing-entry d-flex align-items-center">
+                            <h3>@Model.Pagination.PaginationSummary</h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-xl-5">
+                        <div class="navigation-tab">
+                            <input type="button" value="First" class="btn btn-secondary navigation" data-direction="First" />
+                            <input type="button" value="Previous" class="btn btn-secondary navigation" data-direction="Previous" />
+                            <label> @Model?.Pagination.CurrentPage / @Model?.Pagination.TotalPage</label>
+                            <input type="button" value="Next" class="btn btn-secondary navigation" data-direction="Next" />
+                            <input type="button" value="Last" class="btn btn-secondary navigation" data-direction="Last" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @Html.HiddenFor(m => m.Pagination.Skip)
+        @Html.HiddenFor(m => m.Pagination.TotalRecord)
+    </div>
+</div>
+
+<script src="@Url.Content("~/custom-js/student/list.js")"></script>
+<script>
+    window.paginationConfig = {
+        pageSize: @Model.Pagination.PageSize,
+        totalPage: @Model.Pagination.TotalPage,
+        currentPage: @Model.Pagination.CurrentPage,
+        skip: @Model.Pagination.Skip
+    };
+</script>

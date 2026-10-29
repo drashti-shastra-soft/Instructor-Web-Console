@@ -1,0 +1,191 @@
+﻿@model InstructorWebClient.Domain.User
+
+<div class="modal fade" id="modal-user" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Model.Id != default(int))
+                {
+                    <h1 class="modal-title fs-5">Edit User</h1>
+                }
+                else
+                {
+                    <h1 class="modal-title fs-5">Add User</h1>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.Id)
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>First Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "Enter First Name" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Last Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Enter Last Name" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Email Address</label>
+                        @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control", placeholder = "Enter Email Address" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Mobile Number</label>
+                        @Html.TextBoxFor(m => m.MobileNumber, new { @class = "form-control", placeholder = "Enter Mobile Number" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Username <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Enter Username" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Password <span class="text-danger">*</span></label>
+                        <div class="position-relative password-visibility-wrapper">
+                            @Html.TextBoxFor(m => m.Password, new { @class = "form-control password-input", type = "password", placeholder = "Enter Password" })
+                            <i class="fa-solid fa-eye toggle-password-icon cursor-pointer"></i>
+                            <span class="text-danger" id="spnPassword"></span>
+                        </div>                        
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <label>User Type <span class="text-danger">*</span></label>
+                        @Html.DropDownListFor(x => x.UserTypeId, new SelectList(ViewBag.UserTypes, "Id", "Name", Model.UserTypeId), "Select User Type", new { @class = "form-control" })
+                        <span class="text-danger" id="spnUserTypeId"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-check">
+                            @Html.LabelFor(m => m.IsActive, "Is Active?", new { @class = "form-check-label" })
+                            @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close" data-bs-dismiss="modal">Close</button>
+                <a href="javascript:void(0);" class="btn btn-primary btn-submit">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--script for validation-->
+<script>
+    $(document).ready(function () {
+        $('.btn-submit').click(function () {
+            if (fnIsValid()) {
+                $('#frmCreate').submit();
+            }
+        });
+        // Show toast if notification exists
+        var type = '@ViewData["NotificationType"]';
+        var message = '@ViewData["NotificationMsg"]';
+
+        if (type && message) {
+            fnGetNotified(type, message);
+            $('.modal').modal('hide'); // Hide any open modals
+            $('body').removeClass('modal-open'); // Remove the scroll lock
+            $('.modal-backdrop').remove(); // Remove the leftover backdrop
+            $('#frmList').submit();
+        }
+
+        $('#MobileNumber').mask('(000) 000-0000');
+
+        $('.toggle-password-icon').on('click', function () {
+            const $input = $(this).siblings('input');
+            const isPassword = $input.attr('type') === 'password';
+            $input.attr('type', isPassword ? 'text' : 'password');
+            $(this).toggleClass('fa-eye fa-eye-slash');
+        });
+
+        $('#FirstName, #LastName').on('input', function () {
+           let first = $('#FirstName').val().trim();
+           let last = $('#LastName').val().trim();
+
+           let rawUsername = (first + last.charAt(0)).toLowerCase();
+
+           let username = rawUsername.charAt(0).toUpperCase() + rawUsername.slice(1);
+
+           $('#Username').val(username);
+        });
+    });
+
+    function fnIsValid() {
+        var isValid = true;
+
+        var firstName = $.trim($('#FirstName').val());
+        var lastName = $.trim($('#LastName').val());
+        var username = $.trim($('#Username').val());
+        var password = $.trim($('#Password').val());
+        var emailAddress = $.trim($('#EmailAddress').val());
+        var mobileNumber = $.trim($('#MobileNumber').val());
+        var userTypeId = $.trim($('#UserTypeId').val());
+
+        if (firstName == null || firstName == '' || firstName == undefined) {
+            $('#FirstName').next('span').text('First Name is required!');
+            isValid = false;
+        } else {
+            $('#FirstName').next('span').text('');
+        }
+
+        if (lastName == null || lastName == '' || lastName == undefined) {
+            $('#LastName').next('span').text('Last Name is required!');
+            isValid = false;
+        } else {
+            $('#LastName').next('span').text('');
+        }
+
+         if (username == null || username == '' || username == undefined) {
+            $('#Username').next('span').text('Username is required!');
+            isValid = false;
+        } else {
+            $('#Username').next('span').text('');
+        }
+
+        if (password == null || password == '' || password == undefined) {
+            $('#spnPassword').text('Password is required!');
+            isValid = false;
+        } else {
+            $('#spnPassword').text('');
+        }
+
+        if (emailAddress != null && emailAddress != '' && emailAddress != undefined) {
+            if (!fnValidateEmail(emailAddress)) {
+                isValid = false;
+                $('#EmailAddress').next('span').text('Please enter correct email address!');
+            } else {
+                $('#EmailAddress').next('span').text('');
+            }
+        }
+
+        if (mobileNumber != null && mobileNumber != '' && mobileNumber != undefined) {
+            if (mobileNumber.length != 14) {
+                $('#Mobile').next('span').text('Please enter valid mobile number!');
+                isValid = false;
+            } else {
+                $('#Mobile').next('span').text('');
+            }
+        }
+
+        if (userTypeId == null || userTypeId == '' || userTypeId == undefined) {
+            $('#spnUserTypeId').text('Please select user type!');
+            isValid = false;
+        } else {
+            $('#spnUserTypeId').text('');
+        }
+
+        return isValid;
+    }
+</script>

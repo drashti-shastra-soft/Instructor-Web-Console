@@ -1,0 +1,85 @@
+﻿@model InstructorWebClient.Domain.StudentCourseLister
+@{
+    ViewData["Title"] = "Student";
+}
+
+<div class="app-content-header">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-sm-6"><h3 class="mb-0"></h3></div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Student")">Student</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Student Course</li>
+                </ol>
+            </div>
+        </div>
+        <!--end::Row-->
+    </div>
+    <!--end::Container-->
+</div>
+<!--begin::App Content-->
+<div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-12">
+                @using (Html.AjaxBeginForm("List", "StudentCourse", new AjaxOptions
+                {
+                    HttpMethod = "POST",
+                    UpdateTargetId = "divList",
+                    LoadingElementId = "loading-element"
+                }, new { id = "frmList" }))
+                {
+                    <div id="divList">
+                        <partial name="_List" model="@Model" />
+                    </div>
+                }
+            </div>
+            <div class="col-12">
+                @using (Html.AjaxBeginForm("Create", "StudentCourse", new AjaxOptions
+                {
+                    HttpMethod = "POST",
+                    UpdateTargetId = "divCreate",
+                    LoadingElementId = "loading-element"
+                }, new { id = "frmCreate" }))
+                {
+                    <div id="divCreate">
+                    </div>
+                }
+            </div>
+        </div>
+        <!--end::Row-->
+    </div>
+    <!--end::Container-->
+</div>
+<!--end::App Content-->
+
+<script>
+    $(document).ready(function() {        
+        $.ajax({
+            url: '@Url.Action("List", "StudentCourse")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify('@Model'),
+            beforeSend: function () {
+                $('#loading-element').show();
+            },
+            success: function (response) {
+                $('#divList').html(response);
+            },
+            error: function (xhr) {
+                $('#divList').html('<p>Error loading data.</p>');
+                console.error(xhr.responseText);
+            },
+            complete: function () {
+                $('#loading-element').hide();
+            }
+        });
+    });
+
+</script>

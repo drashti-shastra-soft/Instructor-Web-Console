@@ -1,0 +1,114 @@
+﻿@model InstructorWebClient.Domain.Module
+@{
+    var index = ViewData["ModuleIndex"] as int? ?? 0;
+    var rowIndex = index + 1;
+}
+
+<style>
+    .module-entry {
+        position: relative;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+    }
+
+        .module-entry::before {
+            position: absolute;
+            content: '';
+            width: 95%;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e3e3e3;
+            height: 1px;
+        }
+
+    .number-block {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        height: 20px;
+        width: 20px;
+        color: #fff;
+        background: #0d6efd;
+        margin-right: 5px;
+        border-radius: 3px;
+    }
+</style>
+
+<div class="row mb-2">
+    <div class="module-entry">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label><span class="number-block">@rowIndex</span> Module</label>
+                <a href="javascript:void(0);" class="btn btn-sm btn-outline-danger btn-remove-module pointer-cursor" title="Remove Module">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </div>
+            @Html.DropDownListFor(m => m.ModuleNumber, Enumerable.Range(1, 8).Select(n => new SelectListItem { Text = n.ToString(), Value = n.ToString() }), "Select Module", new { @class = "form-control ModuleNumber" })
+            <span class="text-danger module-number-error" style="display:none;"></span>
+        </div>
+        <div class="col-md-12 mt-2">
+            <label>Locations</label>
+            <div class="row">
+                @foreach (var location in new[] { "In Yard", "In Vehicle", "In Classroom" })
+                {
+                    var hour = Model.HourLocations?.FirstOrDefault(h => h.Location == location)?.Hour;
+                    var isChecked = hour != null;
+
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   class="form-check-input location-checkbox"
+                                   name="Modules[@index].HourLocationsCheckbox"
+                                   value="@location"
+                                   @(isChecked ? "checked" : "") />
+                            <label class="form-check-label">@location</label>
+                        </div>
+                        <input type="text"
+                               class="form-control hours-input mt-1"
+                               name="Modules[@index].HourLocations[@location].Hour"
+                               value="@hour"
+                               data-location="@location"
+                               placeholder="HH:mm"
+                               style="@(isChecked ? "" : "display:none;")" />
+                        <span class="text-danger d-block mt-1"
+                              data-location-error="@location"
+                              style="display:none;"></span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.hours-input').mask('00:00');
+
+        $(".remove-module").click(function () {
+            if ($('.module-entry').length > 1) {
+                $(this).closest('.module-entry').remove();
+            } else {
+                $('#ModuleError').text('At least one module is required.');
+            }
+        });
+
+        if ($('#Hours').val() == 0){
+            $('#Hours').val('');
+        }
+
+        $(".location-checkbox").change(function () {
+            const isChecked = $(this).is(':checked');
+            const location = $(this).val();
+            const $hoursInput = $(this).closest('.col-md-4').find(`.hours-input[data-location="${location}"]`);
+            const $errorSpan = $(this).closest('.col-md-4').find(`.location-${location.toLowerCase().replace(/\s/g, '-')}-error`);
+
+            if (isChecked) {
+                $hoursInput.show();
+                $errorSpan.hide().text('');
+            } else {
+                $hoursInput.hide().val('');
+                $errorSpan.hide().text('');
+            }
+        });
+    });
+</script>

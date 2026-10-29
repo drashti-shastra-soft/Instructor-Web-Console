@@ -1,0 +1,87 @@
+﻿@model InstructorWebClient.Domain.Session
+
+<div class="modal fade" id="modal-session" tabindex="-1" aria-labelledby="SessionModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Model.Id > default(int))
+                {
+                    <h1 class="modal-title fs-5" id="SessionModalLabel">Edit Session</h1>
+                }
+                else
+                {
+                    <h1 class="modal-title fs-5" id="SessionModalLabel">Add Session</h1>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs" id="ClassTypes" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="class-one-tab" data-bs-toggle="tab" data-bs-target="#class-one-tab-pane" type="button" role="tab" aria-controls="class-one-tab-pane" aria-selected="true">Class One</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="class-three-tab" data-bs-toggle="tab" data-bs-target="#class-three-tab-pane" type="button" role="tab" aria-controls="class-three-tab-pane" aria-selected="false">Class Three</button>
+                    </li>                    
+                </ul>
+                <div class="tab-content" id="ClassTypesContent">
+                    <div class="tab-pane fade show active" id="class-one-tab-pane" role="tabpanel" aria-labelledby="class-one-tab" tabindex="0">
+                        Class One
+                    </div>
+                    <div class="tab-pane fade" id="class-three-tab-pane" role="tabpanel" aria-labelledby="class-three-tab" tabindex="0">
+                        Class Three
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close" data-bs-dismiss="modal">Close</button>
+                <a href="javascript:void(0);" class="btn btn-primary btn-submit">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // When Class One tab is clicked
+        $("#class-one-tab").on("shown.bs.tab", function () {
+            $("#class-one-tab-pane").empty();
+            $("#class-three-tab-pane").empty();
+
+            fnHandleAjaxRequest({
+                url: "/Session/ClassOnePartial",
+                method: 'GET',
+                contentType: 'application/json',                
+                onSuccess: function (response) {
+                    $("#class-one-tab-pane").html(response);
+                },
+                onError: function (errorMsg) {
+                    $("#class-one-tab-pane").html("<div class='alert alert-danger'>" + errorMsg + "</div>");
+                }
+            });
+        });
+
+        // When Class Three tab is clicked
+        $("#class-three-tab").on("shown.bs.tab", function () {
+            $("#class-one-tab-pane").empty();
+            $("#class-three-tab-pane").empty();
+
+            fnHandleAjaxRequest({
+                url: "/Session/ClassThreePartial",
+                method: 'GET',
+                contentType: 'application/json',
+                onSuccess: function (response) {
+                    $("#class-three-tab-pane").html(response);
+                },
+                onError: function (errorMsg) {
+                    $("#class-three-tab-pane").html("<div class='alert alert-danger'>" + errorMsg + "</div>");
+                }
+            });
+        });
+
+        // 🔑 Trigger the event manually for the active tab on page load
+        var $activeTab = $('#ClassTypes .nav-link.active');
+        if ($activeTab.length) {
+            $activeTab.trigger('shown.bs.tab');
+        }
+    });
+</script>
+

@@ -1,0 +1,336 @@
+﻿@model InstructorWebClient.Domain.Session
+
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.UserId)
+@Html.HiddenFor(m => m.ClassType)
+<!-- Date and Time Inputs -->
+<div class="row mb-2">
+    <div class="col">
+        <label>Date <span class="text-danger">*</span></label>
+        @Html.TextBoxFor(m => m.Date, "{0:yyyy-MM-dd}", new { @class = "form-control", @type = "date" })
+        <span class="text-danger date-error" style="display:none;"></span>
+    </div>
+</div>
+
+<div class="row mb-2">
+    <div class="col">
+        <label>From Time <span class="text-danger">*</span></label>
+        @Html.TextBoxFor(m => m.StartTime, "{0:HH:mm}", new { @class = "form-control", @type = "time" })
+        <span class="text-danger time-error" style="display:none;"></span>
+    </div>
+    <div class="col">
+        <label>To Time <span class="text-danger">*</span></label>
+        @Html.TextBoxFor(m => m.EndTime, "{0:HH:mm}", new { @class = "form-control", @type = "time" })
+        <span class="text-danger time-error" style="display:none;"></span>
+    </div>
+</div>
+
+<!-- Student Names -->
+<div class="row mb-2">
+    <div class="col">
+        <label>Student Names (comma-separated) <span class="text-danger">*</span></label>
+        @Html.DropDownList("Students", new SelectList(ViewBag.Students, "Value", "Text"), new { @class = "form-control js-multiple-limit", multiple = "multiple" })
+        <span class="text-danger student-error"></span>
+    </div>
+</div>
+
+<!-- Modules -->
+<div class="row mb-2">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <label>Modules</label>
+            <button type="button" class="btn btn-outline-primary" id="add-module">Add Module</button>
+        </div>
+        <hr />
+        <div id="module-container">
+            @if (Model.Modules != null && Model.Modules.Count > 0)
+            {
+                for (int i = 0; i < Model.Modules.Count; i++)
+                {
+                    @await Html.PartialAsync("_ModuleRowPartial", Model.Modules[i], new ViewDataDictionary(ViewData) { { "ModuleIndex", i } })
+                }
+            }
+        </div>
+        <span class="text-danger" id="ModuleError"></span>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('#modal-session .js-multiple-limit').select2({
+            dropdownParent: $('#modal-session'),
+        });
+
+        // Auto-fill current date/time for new session
+        const now = new Date();
+        const timeStr = now.toTimeString().slice(0, 5);
+        const dateStr = now.toISOString().split('T')[0];
+        const id = parseInt($('#Id').val());
+
+        if (id <= 0) {
+            $('#Date').val(dateStr);
+            $('#StartTime').val(timeStr);
+            $('#EndTime').val(timeStr);
+        }
+
+        $('#add-module').click(function () {
+            let index = $('.module-entry').length;
+            $.get('/Session/GetModuleRowPartial?index=' + index, function (html) {
+                $('#module-container').append(html);
+            });
+        });
+
+        //$('#add-module').trigger('click');
+    });
+
+    $(document).off('click', '.btn-submit').on('click', '.btn-submit', function () {
+        const startTime = $('#StartTime').val()?.trim();
+        const endTime = $('#EndTime').val()?.trim();
+
+            if (!fnValidation()) return;
+
+            const payload = {
+                Id: $('#Id').val(),
+                UserId: $('#UserId').val(),
+                Date: $('#Date').val(),
+                StartTime: startTime,
+                EndTime: endTime,
+                ClassType: $('#ClassType').val(),
+                Modules: collectModules(),
+                StudentSessions: CollectStudents()
+            };
+
+            var requestData = JSON.stringify(payload);
+
+            $.ajax({
+                url: '/Session/Create',
+                type: 'POST',
+                contentType: 'application/json',
+                data: requestData,
+                beforeSend: function () {
+                    $('#loading-element').show();
+                },
+                success: function (response) {
+                    if (response?.notificationType === 'success') {
+                        fnGetNotified(response.notificationType, response.notificationMsg);
+                        $('.modal').modal('hide');
+                        $('body').removeClass('modal-open');
+                        $('.modal-backdrop').remove();
+                        $('#frmList').submit();
+                    } else {
+                        fnGetNotified(response.notificationType, response.notificationMsg);
+                    }
+                },
+                error: function () {
+                    fnGetNotified('error', 'Error saving session. Please try again.');
+                },
+                complete: function () {
+                    $('#loading-element').hide();
+                }
+            });
+    });
+
+    // Remove module row
+    $(document).on('click', '.btn-remove-module', function () {
+        $(this).closest('.module-entry').remove();
+
+        // Renumber remaining modules
+        $('.module-entry').each(function (i) {
+            $(this).attr('data-index', i);
+            $(this).find('.number-block').text(i + 1);
+            $(this).find('select.ModuleNumber').attr('name', `Modules[${i}].ModuleNumber`);
+            $(this).find('.location-checkbox').attr('name', `Modules[${i}].HourLocationsCheckbox`);
+            $(this).find('.hours-input').each(function () {
+                const location = $(this).data('location');
+                $(this).attr('name', `Modules[${i}].HourLocations[${location}].Hour`);
+            });
+        });
+    });
+
+
+    function CollectStudents() {
+        const students = [];
+
+        var selectedValues = $("#Students").val();
+        $.each(selectedValues, function (index, value) {
+            var student = {
+                StudentId: value
+            };
+            students.push(student);
+        });
+
+        return students;
+    }
+
+    // Main validation
+    function fnValidation() {
+        let isValid = true;
+
+        const date = $("#Date").val()?.trim();
+        const students = $("#Students").val();
+        const startTimeStr = $("#StartTime").val()?.trim();
+        const endTimeStr = $("#EndTime").val()?.trim();
+
+        $("#Date").next('.date-error').text('').hide();
+        $('#StartTime').next('.time-error').text('').hide();
+        $('#EndTime').next('.time-error').text('').hide();
+        $(".student-error").text('').hide();
+        $('#ModuleError').text('');
+
+        // 🔹 Validate Date
+        if (!date) {
+            $("#Date").next('.date-error').text("Date is required!").show();
+            isValid = false;
+        }
+
+        // 🔹 Validate Start Time
+        if (!startTimeStr) {
+            $('#StartTime').next('.time-error').text('From Time is required!').show();
+            isValid = false;
+        }
+
+        // 🔹 Validate End Time
+        if (!endTimeStr) {
+            $('#EndTime').next('.time-error').text('To Time is required!').show();
+            isValid = false;
+        }
+
+        // 🔹 Student  Time
+        if (students.length <= 0) {
+            $('.student-error').text('Please select at least one student!').show();
+            isValid = false;
+        }
+
+        let sessionDuration = 0;
+
+        // 🔹 Compare Start and End Time
+        if (startTimeStr && endTimeStr) {
+            const start = parseTimeToMinutes(startTimeStr);
+            const end = parseTimeToMinutes(endTimeStr);
+
+            if (isNaN(start) || isNaN(end)) {
+                $('#EndTime').next('.time-error').text('Invalid time format.').show();
+                isValid = false;
+            } else if (end <= start) {
+                $('#EndTime').next('.time-error').text('End Time must be greater than Start Time.').show();
+                isValid = false;
+            } else {
+                sessionDuration = end - start;
+            }
+        }
+
+        // 🔹 Validate Modules only if sessionDuration is valid
+        if (sessionDuration > 0) {
+            const moduleValidation = validateModules(sessionDuration);
+            if (!moduleValidation.isValid) {
+                isValid = false;
+            }
+        } else {
+            $('#ModuleError').text('Something went wrong with session timing!');
+        }
+
+        return isValid;
+    }
+
+    function validateModules(sessionDurationInMinutes) {
+        let isValid = true;
+        let moduleMinutesTotal = 0;
+        let selectedModules = new Set();
+
+        $('#ModuleError').text('');
+
+        $('.module-entry').each(function () {
+            const $moduleEntry = $(this);
+            const moduleVal = $moduleEntry.find('.ModuleNumber').val();
+            const moduleErrorSpan = $moduleEntry.find('.module-number-error');
+
+            let moduleMinutes = 0;
+            let locationSelected = false;
+
+            // 🔹 Validate Module Selection
+            if (!moduleVal || moduleVal === "Select Module") {
+                moduleErrorSpan.text('Please select a module.').show();
+                isValid = false;
+            } else if (selectedModules.has(moduleVal)) {
+                moduleErrorSpan.text('Duplicate module selected.').show();
+                isValid = false;
+            } else {
+                moduleErrorSpan.text('').hide();
+                selectedModules.add(moduleVal);
+            }
+
+            // 🔹 Place this block inside the location-checkbox loop:
+            $moduleEntry.find('.location-checkbox').each(function () {
+                const $checkbox = $(this);
+                const location = $checkbox.val();
+                const $col = $checkbox.closest('.col-md-4');
+                const $hoursInput = $col.find(`.hours-input[data-location="${location}"]`);
+                const $errorSpan = $col.find(`span[data-location-error="${location}"]`);
+
+                if ($checkbox.is(':checked')) {
+                    locationSelected = true;
+                    const hoursStr = $hoursInput.val()?.trim();
+                    const minutes = parseHHMMToMinutes(hoursStr);
+
+                    if (!hoursStr || isNaN(minutes)) {
+                        $errorSpan.text('Enter valid hours (e.g. 01:30)').show();
+                        isValid = false;
+                    } else {
+                        $errorSpan.text('').hide();
+                        moduleMinutes += minutes;
+                    }
+                } else {
+                    $hoursInput.val('');
+                    $errorSpan.text('').hide();
+                }
+            });
+
+            // 🔹 After location loop, validate if any location was selected
+            if (!locationSelected) {
+                $('#ModuleError').text('At least one location must be selected for each module.');
+                isValid = false;
+            }
+
+            moduleMinutesTotal += moduleMinutes;
+        });
+
+        // 🔹 Validate Total Duration
+        if (moduleMinutesTotal > sessionDurationInMinutes) {
+            $('#ModuleError').text(`Module time exceeds session duration (${formatToHHMM(sessionDurationInMinutes)}). Entered: ${formatToHHMM(moduleMinutesTotal)}.`);
+            isValid = false;
+        } else if (moduleMinutesTotal < sessionDurationInMinutes) {
+            $('#ModuleError').text(`Module time is less than session duration (${formatToHHMM(sessionDurationInMinutes)}). Entered: ${formatToHHMM(moduleMinutesTotal)}.`);
+            isValid = false;
+        }
+
+        return { isValid, moduleMinutesTotal };
+    }
+
+    // Collect module data
+    function collectModules() {
+        const modules = [];
+
+        $('.module-entry').each(function () {
+            const moduleNumber = $(this).find('.ModuleNumber').val();
+            const hourLocations = [];
+
+            $(this).find('.location-checkbox:checked').each(function () {
+                const location = $(this).val();
+                const $col = $(this).closest('.col-md-4');
+                const hours = $col.find(`.hours-input[data-location="${location}"]`).val()?.trim();
+
+                hourLocations.push({
+                    Location: location,
+                    Hour: hours
+                });
+            });
+
+            modules.push({
+                ModuleNumber: parseInt(moduleNumber),
+                HourLocations: hourLocations
+            });
+        });
+
+        return modules;
+    }
+</script>

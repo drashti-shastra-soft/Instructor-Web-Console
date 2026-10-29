@@ -1,0 +1,100 @@
+﻿@model InstructorWebClient.Domain.SessionSummary
+
+<div class="modal fade" id="modal-session-history" tabindex="-1" aria-labelledby="SessionHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border border-2">
+            <div class="modal-header border-bottom border-dark">
+                <h5 class="modal-title fw-bold" id="sessionHistoryModalLabel">
+                    <span id="spn-instructor-name">@Model.Username's</span> Session History
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.UserId)
+                <div class="container-fluid">
+                    <div class="row align-items-end mb-3 gap-10">
+                        <div class="col-md-5 col-xs-6">
+                            <label class="fw-bold">Year</label>
+                            @Html.DropDownList("Year", (IEnumerable<SelectListItem>)ViewBag.Years, "Select Year", new { @class = "form-control border border-dark" })
+                            <span id="spnYear" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-5 col-xs-6">
+                            <label class="fw-bold">Month</label>
+                            @Html.DropDownList("Month", (IEnumerable<SelectListItem>)ViewBag.Months, "Select Month", new { @class = "form-control border border-dark" })
+                            <span id="spnMonth" class="text-danger"></span>
+                        </div>
+                        <div class="col-xs-4 col-md-2">
+                            <a href="javascript:void(0);" class="btn btn-info btn-search text-white">Search</a>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <p><strong>In Yard:</strong> <span id="yard-hours">@Model.InYard</span></p>
+                        <p><strong>In Vehicle:</strong> <span id="vehicle-hours">@Model.InVehicle</span></p>
+                        <p><strong>In Classroom:</strong> <span id="classroom-hours">@Model.InClassroom</span></p>
+                        <p><strong>Total:</strong> <span id="total-hours">@Model.Total</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth() + 1;
+
+        $('#Year').val(currentYear).change();
+        $('#Month').val(currentMonth).change();
+
+        $('.btn-search').on('click', function () {
+            if (fnIsValid()) {
+                $('#loading-element').show();
+                $.ajax({
+                    url: '/User/GetSessionHistory',
+                    type: 'GET',
+                    data: { id: $('#UserId').val(), year: $('#Year').val(), month: $('#Month').val() },
+                    success: function (data) {
+                        if (data) {
+                            $('#yard-hours').text(data.inYard);
+                            $('#vehicle-hours').text(data.inVehicle);
+                            $('#classroom-hours').text(data.inClassroom);
+                            $('#total-hours').text(data.total);
+                        }
+                        $('#loading-element').hide();
+                    },
+                    error: function (xhr) {
+                        fnGetNotified('error', xhr.responseText);
+                    }
+                });
+            }
+        });
+    });
+
+    function fnIsValid() {
+        var isValid = true;
+
+        var year = $('#Year').val();
+        var month = $('#Month').val();
+
+        if (year == null || year == '' || year == undefined || year == '0') {
+            isValid = false;
+            $('#spnYear').text("Please select year!");
+        } else {
+            $('#spnYear').text("");
+        }
+
+        if (month == null || month == '' || month == undefined || month == '0') {
+            isValid = false;
+            $('#spnMonth').text("Please select month!");
+        } else {
+            $('#spnMonth').text("");
+        }
+
+        return isValid;
+    }
+</script>

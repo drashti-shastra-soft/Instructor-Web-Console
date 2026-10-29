@@ -1,0 +1,104 @@
+﻿@model InstructorWebClient.Domain.Course
+
+<div class="modal fade" id="modal-course" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Model.Id != default(int))
+                {
+                    <h1 class="modal-title fs-5">Edit Course</h1>
+                }
+                else
+                {
+                    <h1 class="modal-title fs-5">Add Course</h1>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.Id)
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Name <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Enter Name" })
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="col">
+                        <label>Total Cumulative Hours <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.TotalCumulativeHours, new { @class = "form-control", placeholder = "Enter Total Cumulative Hours" })
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Description</label>
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Enter Description", rows = "4" })
+                    </div>
+                </div>
+                
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="form-check">
+                            @Html.LabelFor(m => m.IsActive, "Is Active?", new { @class = "form-check-label" })
+                            @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-close" data-bs-dismiss="modal">Close</button>
+                <a href="javascript:void(0);" class="btn btn-primary btn-submit">Submit</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--script for validation-->
+<script>
+    $(document).ready(function () {
+        $('.btn-submit').click(function () {
+            if (fnIsValid()) {
+                $('#frmCreate').submit();
+            }
+        });
+        // Show toast if notification exists
+        var type = '@ViewData["NotificationType"]';
+        var message = '@ViewData["NotificationMsg"]';
+
+        if (type && message) {
+            fnGetNotified(type, message);
+            $('.modal').modal('hide'); 
+            $('body').removeClass('modal-open'); 
+            $('.modal-backdrop').remove(); 
+            $('#frmList').submit();
+        }
+            
+        if (parseInt($('#TotalCumulativeHours').val()) <= 0) {
+                $('#TotalCumulativeHours').val('');
+        }
+    });
+
+    function fnIsValid() {
+        var isValid = true;
+
+        var name = $.trim($('#Name').val());
+        var totalCumulativeHours = $.trim($('#TotalCumulativeHours').val());
+
+        if (name == null || name == '' || name == undefined) {
+            $('#Name').next('span').text('Name is required!');
+            isValid = false;
+        } else {
+            $('#Name').next('span').text('');
+        }
+
+        if (totalCumulativeHours == null || totalCumulativeHours == '' || totalCumulativeHours == undefined) {
+            $('#TotalCumulativeHours').next('span').text('Name is required!');
+            isValid = false;
+        } else {
+            $('#TotalCumulativeHours').next('span').text('');
+        }
+
+        return isValid;
+    }
+</script>

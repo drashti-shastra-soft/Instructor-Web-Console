@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;CS8604;CS8600;CS8601;CS8602;CS1998</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;CS8604;CS8600;CS8601;CS8602;CS1998</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Filter\**" />
+    <Compile Remove="Views\Session-test\**" />
+    <Content Remove="Filter\**" />
+    <Content Remove="Views\Session-test\**" />
+    <EmbeddedResource Remove="Filter\**" />
+    <EmbeddedResource Remove="Views\Session-test\**" />
+    <None Remove="Filter\**" />
+    <None Remove="Views\Session-test\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.Unobtrusive.Ajax" Version="3.2.0" />
+    <PackageReference Include="jQuery" Version="3.7.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.jQuery.Unobtrusive.Ajax" Version="3.2.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InstructorWebClient.DataAccess\InstructorWebClient.DataAccess.csproj" />
+    <ProjectReference Include="..\InstructorWebClient.Domain\InstructorWebClient.Domain.csproj" />
+    <ProjectReference Include="..\InstructorWebClient.Infrastructure\InstructorWebClient.Infrastructure.csproj" />
+    <ProjectReference Include="..\InstructorWebClient.Repository\InstructorWebClient.Repository.csproj" />
+    <ProjectReference Include="..\InstructorWebClient.Service\InstructorWebClient.Service.csproj" />
+  </ItemGroup>
+
+</Project>
